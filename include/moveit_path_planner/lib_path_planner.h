@@ -42,9 +42,11 @@ namespace planner_functions
   std::vector< std::vector< std::vector< double > > > mapCell_generator(double depth_x, double width_y, double height_z, double cell_size);
 
   //brief: Function to convert a space point into a matrix point data
+  //       WARNING: there are is no control performed on the input parameter to speed up the computation
   std::vector<int> XYZtoIJK(std::vector< std::vector< std::vector< double > > > &map, double cell_size, geometry_msgs::Vector3 XYZ_location);
 
   //brief: Function to convert a matrix point into a space point data
+  //       WARNING: there are is no control performed on the input parameter to speed up the computation
   geometry_msgs::Vector3 IJKtoXYZ(std::vector< std::vector< std::vector< double > > > &map, double cell_size, std::vector<int> IJK_location);
 
   //brief: Function to saturate the values of a mapCell matrix
@@ -71,6 +73,12 @@ namespace planner_functions
 
   //Brief: Function to generate a full potential field map normalized on 'norm_val'
   std::vector< std::vector< std::vector< double > > > mapCell_potential_field_full(std::vector< std::vector< std::vector< double > > > &map, double cell_size, double attractive_wave_step, double radius_repulsive_field, geometry_msgs::Vector3 goal_location, double norm_val = 1.0);
+
+  //brief: Function to extract the path point in IJK matrix coordinates
+  std::vector<std::vector<int>> mapcell_potential_field_path_extractor_IJK(std::vector< std::vector< std::vector< double > > > &map, double cell_size, geometry_msgs::Vector3 starting_point_location);
+
+  //brief: Function to extract the path point in XYZ world coordinates
+  std::vector<geometry_msgs::Vector3> mapcell_potential_field_path_extractor_XYZ(std::vector< std::vector< std::vector< double > > > &map, double cell_size, geometry_msgs::Vector3 starting_point_location);
 
 
 

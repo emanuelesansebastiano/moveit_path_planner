@@ -71,38 +71,9 @@ namespace planner_functions
 
   std::vector<int> XYZtoIJK(std::vector< std::vector< std::vector< double > > > &map, double cell_size, geometry_msgs::Vector3 XYZ_location)
   {
-	  int temp_int;
 	  std::vector<int> IJK2return; IJK2return.resize(3);
 	  namespace msf = moveit_side_functions;
 
-	  //function check
-	  //cell_size positive
-	  if(cell_size <= 0.0)
-	  {
-		  std::cout << "Error: the cell size must be strictly positive!" << std::endl;
-		  std::cout << "A null vector has been returned" << std::endl;
-		  return IJK2return;
-	  }
-	  //matrix size check
-	  temp_int = map[0].size();
-	  for(int i = 0; i < map.size(); i++)
-	  {
-		  if(map[i].size() != temp_int){
-			  std::cout << "Error: the raws of the first matrix have NOT constant size!\nNull vector has been returned..." << std::endl;
-			  return IJK2return;
-		  }
-	  }
-	  temp_int = map[0][0].size();
-	  for(int i = 0; i < map.size(); i++)
-	  {
-		  for(int j = 0; j < map[0].size(); j++)
-		  {
-			  if(map[i][j].size() != temp_int){
-				  std::cout << "Error: the depth lines of the first matrix have NOT constant size!\nNull vector has been returned..." << std::endl;
-				  return IJK2return;
-			  }
-		  }
-	  }
 
 	  //main program
 	  XYZ_location.x /= cell_size;
@@ -122,38 +93,9 @@ namespace planner_functions
 
   geometry_msgs::Vector3 IJKtoXYZ(std::vector< std::vector< std::vector< double > > > &map, double cell_size, std::vector<int> IJK_location)
   {
-	  int temp_int;
 	  geometry_msgs::Vector3 XYZ2return;
 	  double temp_dim[3];
 
-	  //function check
-	  //cell_size positive
-	  if(cell_size <= 0.0)
-	  {
-		  std::cout << "Error: the cell size must be strictly positive!" << std::endl;
-		  std::cout << "A null vector has been returned" << std::endl;
-		  return XYZ2return;
-	  }
-	  //matrix size check
-	  temp_int = map[0].size();
-	  for(int i = 0; i < map.size(); i++)
-	  {
-		  if(map[i].size() != temp_int){
-			  std::cout << "Error: the raws of the first matrix have NOT constant size!\nNull vector has been returned..." << std::endl;
-			  return XYZ2return;
-		  }
-	  }
-	  temp_int = map[0][0].size();
-	  for(int i = 0; i < map.size(); i++)
-	  {
-		  for(int j = 0; j < map[0].size(); j++)
-		  {
-			  if(map[i][j].size() != temp_int){
-				  std::cout << "Error: the depth lines of the first matrix have NOT constant size!\nNull vector has been returned..." << std::endl;
-				  return XYZ2return;
-			  }
-		  }
-	  }
 
 	  //main program
 	  temp_dim[0] = map.size()/2;
@@ -684,6 +626,8 @@ namespace planner_functions
 	  std::vector<std::vector<int>> temp_matrix_coor_vector2;
 	  std::vector<std::vector<int>> temp_27_matrix_coor_vector;
 	  temp_27_matrix_coor_vector.resize(27);
+	  for(int i = 0; i < temp_27_matrix_coor_vector.size(); i++)
+		  temp_27_matrix_coor_vector[i].resize(3);
 	  int vec[3];
 	  int progression;
 	  bool done, present;
@@ -749,10 +693,9 @@ namespace planner_functions
 						  else
 							  vec[2] = p3;
 
-						  temp_matrix_pos[0] = temp_matrix_coor_vector[i][0] + vec[0];
-						  temp_matrix_pos[1] = temp_matrix_coor_vector[i][1] + vec[1];
-						  temp_matrix_pos[2] = temp_matrix_coor_vector[i][2] + vec[2];
-						  temp_27_matrix_coor_vector[c] = temp_matrix_pos;
+						  temp_27_matrix_coor_vector[c][0] = temp_matrix_coor_vector[i][0] + vec[0];
+						  temp_27_matrix_coor_vector[c][1] = temp_matrix_coor_vector[i][1] + vec[1];
+						  temp_27_matrix_coor_vector[c][2] = temp_matrix_coor_vector[i][2] + vec[2];
 
 						  c++;
 					  }
@@ -862,12 +805,13 @@ namespace planner_functions
 	  //main program start
 	  int cell_involved = 1 + radius_repulsive_field/cell_size;
 
-	  std::vector<int> temp_matrix_pos; temp_matrix_pos.resize(3);
 	  std::vector<std::vector<int>> matrix_coor_vector;
 	  std::vector<std::vector<int>> temp_matrix_coor_vector;
 	  std::vector<std::vector<int>> temp_matrix_coor_vector2;
 	  std::vector<std::vector<int>> temp_27_matrix_coor_vector;
 	  temp_27_matrix_coor_vector.resize(27);
+	  for(int i = 0; i < temp_27_matrix_coor_vector.size(); i++)
+		  temp_27_matrix_coor_vector[i].resize(3);
 	  double sat_val;
 	  int vec[3];
 	  int progression;
@@ -919,10 +863,9 @@ namespace planner_functions
 						  else
 							  vec[2] = p3;
 
-						  temp_matrix_pos[0] = temp_matrix_coor_vector[i][0] + vec[0];
-						  temp_matrix_pos[1] = temp_matrix_coor_vector[i][1] + vec[1];
-						  temp_matrix_pos[2] = temp_matrix_coor_vector[i][2] + vec[2];
-						  temp_27_matrix_coor_vector[c] = temp_matrix_pos;
+						  temp_27_matrix_coor_vector[c][0] = temp_matrix_coor_vector[i][0] + vec[0];
+						  temp_27_matrix_coor_vector[c][1] = temp_matrix_coor_vector[i][1] + vec[1];
+						  temp_27_matrix_coor_vector[c][2] = temp_matrix_coor_vector[i][2] + vec[2];
 
 						  c++;
 					  }
@@ -973,7 +916,10 @@ namespace planner_functions
 		  for(int i = 0; i < matrix_coor_vector.size(); i++)
 		  {
 			  sat_val = 1.0*(cell_involved-progression)/cell_involved;
+			  //values around objects
 			  map2return[matrix_coor_vector[i][0]][matrix_coor_vector[i][1]][matrix_coor_vector[i][2]] = sat_val;
+			  //values on the edge of the map could be introduced, but it does not improve the computation
+
 		  }
 
 		  //exit condition: there are no cells to cover yet or the system reached the edge of the potential field
@@ -1004,6 +950,148 @@ namespace planner_functions
 	  return map_1;
   }
 
+  std::vector<std::vector<int>> mapcell_potential_field_path_extractor_IJK(std::vector< std::vector< std::vector< double > > > &map, double cell_size, geometry_msgs::Vector3 starting_point_location)
+  {
+	  int temp_int;
+	  std::vector<std::vector<int>> path_points;
+	  std::vector<int> temp_vec;
+
+	  //cell_size positive
+	  if(cell_size <= 0.0)
+	  {
+		  std::cout << "Error: the cell size must be strictly positive!" << std::endl;
+		  std::cout << "A default empty map has been returned" << std::endl;
+		  return path_points;
+	  }
+
+	  //function check
+	  //matrix size check
+	  temp_int = map[0].size();
+	  for(int i = 0; i < map.size(); i++)
+	  {
+		  if(map[i].size() != temp_int){
+			  std::cout << "Error: the raws of the first matrix have NOT constant size!\nA default empty map has been returned..." << std::endl;
+			  return path_points;
+		  }
+	  }
+	  temp_int = map[0][0].size();
+	  for(int i = 0; i < map.size(); i++)
+	  {
+		  for(int j = 0; j < map[0].size(); j++)
+		  {
+			  if(map[i][j].size() != temp_int){
+				  std::cout << "Error: the depth lines of the first matrix have NOT constant size!\nA default empty map has been returned..." << std::endl;
+				  return path_points;
+			  }
+		  }
+	  }
+
+	  //main variables
+	  int c;
+	  int vec[3];
+	  bool new_found;
+	  double temp_double1, temp_double2;
+	  std::vector<std::vector<int>> temp_27_matrix_coor_vector; temp_27_matrix_coor_vector.resize(27);
+	  for(int i = 0; i < 27; i++)
+		  temp_27_matrix_coor_vector[i].resize(3);
+
+	  //main program
+	  temp_vec = XYZtoIJK(map, cell_size, starting_point_location);
+
+	  //research of the minimum value in the map
+	  temp_double2 = map[0][0][0];
+	  for(int p1 = 0; p1 < map.size(); p1++)
+	  {
+		  for(int p2 = 0; p2 < map[0].size(); p2++)
+		  {
+			  for(int p3 = 0; p3 < map[0][0].size(); p3++)
+			  {
+				  if(map[p1][p2][p3] < temp_double2)
+					  temp_double2 = map[p1][p2][p3];
+			  }
+		  }
+	  }
+
+
+	  //main loop
+	  temp_double1 = map[temp_vec[0]][temp_vec[1]][temp_vec[2]];
+	  while(temp_double1 > temp_double2)
+	  {
+		  //value insertion (generation of the cube including the considered point)
+		  int c = 0;
+		  for(int p1 = 0; p1 < 3; p1++)
+		  {
+			  for(int p2 = 0; p2 < 3; p2++)
+			  {
+				  for(int p3 = 0; p3 < 3; p3++)
+				  {
+
+					  if(p1 == 2)
+						  vec[0] = -1;
+					  else
+						  vec[0] = p1;
+					  if(p2 == 2)
+						  vec[1] = -1;
+					  else
+						  vec[1] = p2;
+					  if(p3 == 2)
+						  vec[2] = -1;
+					  else
+						  vec[2] = p3;
+
+					  temp_27_matrix_coor_vector[c][0] = temp_vec[0] + vec[0];
+					  temp_27_matrix_coor_vector[c][1] = temp_vec[1] + vec[1];
+					  temp_27_matrix_coor_vector[c][2] = temp_vec[2] + vec[2];
+
+					  c++;
+				  }
+			  }
+		  }
+
+		  //current minimum value of the investigation
+		  new_found = false;
+		  for(int i = 0; i < temp_27_matrix_coor_vector.size(); i++)
+		  {
+			  if(map[temp_27_matrix_coor_vector[i][0]][temp_27_matrix_coor_vector[i][1]][temp_27_matrix_coor_vector[i][2]] < temp_double1)
+			  {
+				  //temp_double1 is used for the while exit condition
+				  //temp_vec is going to be re-used in the new loop
+				  temp_double1 = map[temp_27_matrix_coor_vector[i][0]][temp_27_matrix_coor_vector[i][1]][temp_27_matrix_coor_vector[i][2]];
+				  temp_vec = temp_27_matrix_coor_vector[i];
+				  new_found = true;
+			  }
+		  }
+
+		  if(new_found)
+		  {
+			  //new path point stored in the list
+			  path_points.push_back(temp_vec);
+		  }else{
+			  std::cout << "A local minimum has been found..." << std::endl;
+			  std::cout << "The " << path_points.size() << " points found until now have been returned..." << std::endl;
+			  return path_points;
+		  }
+	  }
+
+	  return path_points;
+  }
+
+  std::vector<geometry_msgs::Vector3> mapcell_potential_field_path_extractor_XYZ(std::vector< std::vector< std::vector< double > > > &map, double cell_size, geometry_msgs::Vector3 starting_point_location)
+  {
+	  //all the checks are performed by 'mapcell_potential_field_path_extractor_IJK' function
+	  std::vector<std::vector<int>> vectorIJK = mapcell_potential_field_path_extractor_IJK(map, cell_size, starting_point_location);
+	  std::vector<geometry_msgs::Vector3> vectorXYZ;
+	  geometry_msgs::Vector3 temp_vec;
+
+	  //conversion XYK --> XYZ
+	  for(int i = 0; i < vectorIJK.size(); i++)
+	  {
+		  temp_vec = IJKtoXYZ(map,cell_size,vectorIJK[i]);
+		  vectorXYZ.push_back(temp_vec);
+	  }
+
+	  return vectorXYZ;
+  }
 
 
   //Callback for the function 'getRvizInterMarkInit' | global variable
